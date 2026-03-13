@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Python → Odoo Dev Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #14181f;
+    --border: #1e2530;
+    --accent: #7c5cfc;
+    --accent2: #00e5c0;
+    --accent3: #ff6b6b;
+    --text: #e4e8f0;
+    --muted: #6b7385;
+    --gold: #f5c842;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Mesh background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,92,252,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(0,229,192,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .header .label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .header h1 {
+    font-size: clamp(2.2rem, 6vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* Timeline line */
+  .timeline {
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), var(--accent3));
+    opacity: 0.3;
+  }
+
+  /* Phase */
+  .phase {
+    display: flex;
+    gap: 28px;
+    margin-bottom: 48px;
+    animation: fadeLeft 0.6s ease both;
+  }
+
+  .phase:nth-child(1) { animation-delay: 0.1s; }
+  .phase:nth-child(2) { animation-delay: 0.2s; }
+  .phase:nth-child(3) { animation-delay: 0.3s; }
+  .phase:nth-child(4) { animation-delay: 0.4s; }
+  .phase:nth-child(5) { animation-delay: 0.5s; }
+  .phase:nth-child(6) { animation-delay: 0.6s; }
+
+  .phase-dot {
+    flex-shrink: 0;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 2px solid var(--border);
+    position: relative;
+    z-index: 1;
+    background: var(--surface);
+  }
+
+  .phase:nth-child(1) .phase-dot { border-color: var(--accent); box-shadow: 0 0 20px rgba(124,92,252,0.3); }
+  .phase:nth-child(2) .phase-dot { border-color: #5da9fc; box-shadow: 0 0 20px rgba(93,169,252,0.3); }
+  .phase:nth-child(3) .phase-dot { border-color: var(--accent2); box-shadow: 0 0 20px rgba(0,229,192,0.3); }
+  .phase:nth-child(4) .phase-dot { border-color: var(--gold); box-shadow: 0 0 20px rgba(245,200,66,0.3); }
+  .phase:nth-child(5) .phase-dot { border-color: #fc8c5c; box-shadow: 0 0 20px rgba(252,140,92,0.3); }
+  .phase:nth-child(6) .phase-dot { border-color: var(--accent3); box-shadow: 0 0 20px rgba(255,107,107,0.3); }
+
+  .phase-content {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .phase-content:hover {
+    border-color: rgba(124,92,252,0.4);
+    transform: translateX(4px);
+  }
+
+  .phase-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .phase-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .phase-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .tag-beginner { background: rgba(124,92,252,0.15); color: var(--accent); border: 1px solid rgba(124,92,252,0.3); }
+  .tag-foundation { background: rgba(93,169,252,0.15); color: #5da9fc; border: 1px solid rgba(93,169,252,0.3); }
+  .tag-intermediate { background: rgba(0,229,192,0.15); color: var(--accent2); border: 1px solid rgba(0,229,192,0.3); }
+  .tag-odoo-core { background: rgba(245,200,66,0.15); color: var(--gold); border: 1px solid rgba(245,200,66,0.3); }
+  .tag-advanced { background: rgba(252,140,92,0.15); color: #fc8c5c; border: 1px solid rgba(252,140,92,0.3); }
+  .tag-pro { background: rgba(255,107,107,0.15); color: var(--accent3); border: 1px solid rgba(255,107,107,0.3); }
+
+  .phase-duration {
+    margin-left: auto;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .phase-content h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .topics {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .topics li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.88rem;
+    color: #b0b8cc;
+    line-height: 1.5;
+  }
+
+  .topics li::before {
+    content: '▸';
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .phase:nth-child(2) .topics li::before { color: #5da9fc; }
+  .phase:nth-child(3) .topics li::before { color: var(--accent2); }
+  .phase:nth-child(4) .topics li::before { color: var(--gold); }
+  .phase:nth-child(5) .topics li::before { color: #fc8c5c; }
+  .phase:nth-child(6) .topics li::before { color: var(--accent3); }
+
+  .phase-goal {
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .phase:nth-child(2) .phase-goal { border-color: #5da9fc; }
+  .phase:nth-child(3) .phase-goal { border-color: var(--accent2); }
+  .phase:nth-child(4) .phase-goal { border-color: var(--gold); }
+  .phase:nth-child(5) .phase-goal { border-color: #fc8c5c; }
+  .phase:nth-child(6) .phase-goal { border-color: var(--accent3); }
+
+  /* Resources */
+  .resources-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-top: 16px;
+    animation: fadeLeft 0.6s ease 0.7s both;
+  }
+
+  .resources-box h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .res-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .res-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.82rem;
+  }
+
+  .res-item .res-type {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--accent2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .res-item .res-name {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Footer note */
+  .footer-note {
+    text-align: center;
+    margin-top: 48px;
+    padding: 24px;
+    border: 1px dashed var(--border);
+    border-radius: 16px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.7;
+    animation: fadeDown 0.6s ease 0.9s both;
+  }
+
+  .footer-note strong {
+    color: var(--accent2);
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="header">
+    <span class="label">Your Personal Learning Path</span>
+    <h1>Python for<br/>Odoo Development</h1>
+    <p>A structured roadmap from zero Python knowledge to building real Odoo modules — step by step, no shortcuts skipped.</p>
+  </header>
+
+  <div class="timeline">
+
+    <!-- Phase 1 -->
+    <div class="phase">
+      <div class="phase-dot">🐣</div>
+      <div class="phase-content">
+        <div class="phase-meta">
+          <span class="phase-num">Phase 01</span>
+          <span class="phase-tag tag-beginner">Beginner</span>
+          <span class="phase-duration">⏱ 2–3 weeks</span>
+        </div>
+        <h3>Python Fundamentals</h3>
+        <ul class="topics">
+          <li>Variables, data types (str, int, float, bool, None)</li>
+          <li>Operators, conditions (if / elif / else)</li>
+          <li>Loops: for, while — and when to use each</li>
+          <li>Functions: defining, calling, return values</li>
+          <li>Lists, tuples, dictionaries, sets</li>
+          <li>String formatting and f-strings</li>
+          <li>Basic file I/O: reading and writing files</li>
+        </ul>
+        <div class="phase-goal">🎯 Goal: Write simple scripts confidently — calculators, data processors, small CLI tools.</div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase">
+      <div class="phase-dot">🧱</div>
+      <div class="phase-content">
+        <div class="phase-meta">
+          <span class="phase-num">Phase 02</span>
+          <span class="phase-tag tag-foundation">Foundation</span>
+          <span class="phase-duration">⏱ 2–3 weeks</span>
+        </div>
+        <h3>Object-Oriented Python (OOP)</h3>
+        <ul class="topics">
+          <li>Classes and objects — the blueprint concept</li>
+          <li>__init__, self, instance vs class attributes</li>
+          <li>Inheritance and method overriding</li>
+          <li>Encapsulation and properties</li>
+          <li>Magic/dunder methods (__str__, __repr__, etc.)</li>
+          <li>Decorators: @staticmethod, @classmethod, @property</li>
+        </ul>
+        <div class="phase-goal">🎯 Goal: Understand OOP deeply — this is the backbone of every Odoo model you'll ever write.</div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase">
+      <div class="phase-dot">⚙️</div>
+      <div class="phase-content">
+        <div class="phase-meta">
+          <span class="phase-num">Phase 03</span>
+          <span class="phase-tag tag-intermediate">Intermediate</span>
+          <span class="phase-duration">⏱ 2 weeks</span>
+        </div>
+        <h3>Python Essentials for Backend Dev</h3>
+        <ul class="topics">
+          <li>List comprehensions and generator expressions</li>
+          <li>Lambda, map(), filter(), zip()</li>
+          <li>Error handling: try / except / finally</li>
+          <li>Modules and packages: import system</li>
+          <li>Working with JSON and CSV data</li>
+          <li>Virtual environments and pip basics</li>
+          <li>datetime module (heavily used in Odoo)</li>
+        </ul>
+        <div class="phase-goal">🎯 Goal: Write clean, Pythonic code and handle real-world data scenarios without friction.</div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase">
+      <div class="phase-dot">🟣</div>
+      <div class="phase-content">
+        <div class="phase-meta">
+          <span class="phase-num">Phase 04</span>
+          <span class="phase-tag tag-odoo-core">Odoo Core</span>
+          <span class="phase-duration">⏱ 3–4 weeks</span>
+        </div>
+        <h3>Odoo Framework Foundations</h3>
+        <ul class="topics">
+          <li>Odoo architecture: models, views, controllers</li>
+          <li>Setting up Odoo dev environment locally</li>
+          <li>Creating your first custom module (manifest, __init__)</li>
+          <li>Defining models with fields (Char, Integer, Many2one, etc.)</li>
+          <li>ORM methods: create, write, unlink, search, browse</li>
+          <li>XML views: form, tree, kanban, search</li>
+          <li>Security: access rights and record rules</li>
+        </ul>
+        <div class="phase-goal">🎯 Goal: Build and install a working custom Odoo module from scratch.</div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase">
+      <div class="phase-dot">🔥</div>
+      <div class="phase-content">
+        <div class="phase-meta">
+          <span class="phase-num">Phase 05</span>
+          <span class="phase-tag tag-advanced">Advanced Odoo</span>
+          <span class="phase-duration">⏱ 4–5 weeks</span>
+        </div>
+        <h3>Advanced Odoo Development</h3>
+        <ul class="topics">
+          <li>Inheritance: classical, prototype, delegation</li>
+          <li>Computed fields, onchange, constraints</li>
+          <li>Wizards (TransientModel) for pop-up workflows</li>
+          <li>Reports with QWeb templates</li>
+          <li>HTTP controllers and JSON-RPC endpoints</li>
+          <li>Scheduled actions (cron jobs)</li>
+          <li>Overriding core Odoo modules safely</li>
+        </ul>
+        <div class="phase-goal">🎯 Goal: Extend and override existing Odoo apps, build complex business logic modules.</div>
+      </div>
+    </div>
+
+    <!-- Phase 6 -->
+    <div class="phase">
+      <div class="phase-dot">🚀</div>
+      <div class="phase-content">
+        <div class="phase-meta">
+          <span class="phase-num">Phase 06</span>
+          <span class="phase-tag tag-pro">Pro Level</span>
+          <span class="phase-duration">⏱ Ongoing</span>
+        </div>
+        <h3>Real-World Skills & Deployment</h3>
+        <ul class="topics">
+          <li>PostgreSQL basics — querying the Odoo database directly</li>
+          <li>Odoo external API (XML-RPC / JSON-RPC) integration</li>
+          <li>Git workflow for Odoo module versioning</li>
+          <li>Debugging with logging and Odoo shell</li>
+          <li>Performance: prefetch, N+1 problems, domain optimization</li>
+          <li>Odoo.sh or server deployment basics</li>
+          <li>Contributing to OCA (Odoo Community Association)</li>
+        </ul>
+        <div class="phase-goal">🎯 Goal: Deploy production-quality Odoo solutions and collaborate professionally.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Resources -->
+  <div class="resources-box">
+    <h3>📚 Recommended Resources</h3>
+    <div class="res-grid">
+      <div class="res-item">
+        <div class="res-type">Interactive</div>
+        <div class="res-name">Python.org Official Tutorial</div>
+      </div>
+      <div class="res-item">
+        <div class="res-type">Course</div>
+        <div class="res-name">CS50P (Python) — Free on edX</div>
+      </div>
+      <div class="res-item">
+        <div class="res-type">Book</div>
+        <div class="res-name">Automate the Boring Stuff with Python</div>
+      </div>
+      <div class="res-item">
+        <div class="res-type">Odoo Docs</div>
+        <div class="res-name">Odoo Developer Documentation</div>
+      </div>
+      <div class="res-item">
+        <div class="res-type">YouTube</div>
+        <div class="res-name">Odoo Mates / CybroOdoo channel</div>
+      </div>
+      <div class="res-item">
+        <div class="res-type">Practice</div>
+        <div class="res-name">Build 1 real module per phase</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    💬 <strong>Your coach is here.</strong> In this chat thread, bring your code, your errors, your questions — we'll go through each phase together. No phase is too small to ask about. The goal isn't speed, it's depth.
+  </div>
+
+</div>
+</body>
+</html>
