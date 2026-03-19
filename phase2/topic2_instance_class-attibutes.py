@@ -17,3 +17,11 @@ print(mouse.currency) # Access class attribute via instance -> VND
 print(Product.currency) # Access class attribute via class -> VND
 print(laptop.name) # Access instance attribute -> Laptop
 print(mouse.name) # Access instance attribute -> Mouse
+
+## IN Odoo:
+
+class SaleOrder(models.Model):
+    _name = "sale.order" # class attribute
+    _description = "Sales Order" # class attribute
+    
+    name = fields.Char()
